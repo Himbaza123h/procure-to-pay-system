@@ -31,7 +31,7 @@ class CanApproveRequest(permissions.BasePermission):
         user = request.user
         
         # Must be an approver
-        if user.role not in ['approver_level_1', 'approver_level_2']:
+        if user.role not in ['admin', 'approver_level_1', 'approver_level_2']:
             return False
         
         # Request must be pending

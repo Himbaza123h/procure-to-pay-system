@@ -1,22 +1,38 @@
 import { authAPI } from './api';
 
+// services/auth.js
 export const login = async (username, password) => {
   try {
-    const response = await authAPI.login({ username, password });
-    const { access, refresh } = response.data;
-    
-    localStorage.setItem('access_token', access);
-    localStorage.setItem('refresh_token', refresh);
-    
-    // Decode JWT to get user info
-    const userInfo = parseJwt(access);
-    localStorage.setItem('user', JSON.stringify(userInfo));
-    
-    return { success: true, user: userInfo };
+    const response = await fetch('http://localhost:8000/api/auth/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Successful login (status 200)
+      return {
+        success: true,
+        access: data.access,
+        refresh: data.refresh,
+        user: data.user,
+      };
+    } else {
+      // Failed login (status 401 or other error)
+      return {
+        success: false,
+        error: data.detail || 'Login failed',
+      };
+    }
   } catch (error) {
-    return { 
-      success: false, 
-      error: error.response?.data?.detail || 'Login failed' 
+    // Network or other errors
+    return {
+      success: false,
+      error: 'Network error. Please check your connection.',
     };
   }
 };
