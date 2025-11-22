@@ -27,20 +27,22 @@ const Login = () => {
 
     try {
       const result = await login(username, password);
-
-      if (result.success) {
-        // Store tokens if needed
-        if (result.access) {
-          localStorage.setItem('access_token', result.access);
-        }
-        if (result.refresh) {
-          localStorage.setItem('refresh_token', result.refresh);
-        }
-        
-        // Set user data from the API response
-        setUser(result.user);
-        navigate('/dashboard');
-      } else {
+if (result.success) {
+  // Store tokens if needed
+  if (result.access) {
+    localStorage.setItem('access_token', result.access);
+  }
+  if (result.refresh) {
+    localStorage.setItem('refresh_token', result.refresh);
+  }
+  
+  // Store user in localStorage for persistence
+  localStorage.setItem('user', JSON.stringify(result.user));
+  
+  // Set user data from the API response
+  setUser(result.user);
+  navigate('/dashboard');
+} else {
         // Handle error from the API
         setError(result.error || 'Invalid username or password');
         setLoading(false);

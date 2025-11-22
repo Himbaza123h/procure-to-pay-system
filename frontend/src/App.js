@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Pages
 import Login from './pages/Login';
@@ -91,6 +93,18 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
         </Router>
       </AuthProvider>
     </ThemeInitializer>

@@ -2,8 +2,8 @@
 
 A modern Purchase Request & Approval System with AI-powered document processing capabilities.
 
-**Live Demo:** [https://app-url.com](https://app-url.com)  
-**API Documentation:** [https://app-url.com/api/docs](https://app-url.com/api/docs)
+**Live Demo:** [https://app.onrender.com](https://app.onrender.com)  
+**API Documentation:** [https://app.onrender.com/swagger/](https://app.onrender.com/swagger/)
 
 ---
 
@@ -11,11 +11,11 @@ A modern Purchase Request & Approval System with AI-powered document processing 
 
 This system streamlines the procurement process from purchase request to payment approval, featuring:
 
-- **Multi-level approval workflow** - Requests flow through management levels with proper authorization
-- **AI document processing** - Automatic extraction of vendor details, items, and prices from proformas and receipts
-- **Smart PO generation** - Automatic purchase order creation upon final approval
+- **Multi-level approval workflow** - Requests require approval from Level 1 and Level 2 approvers
+- **AI document processing** - Automatic extraction of vendor details, items, and prices from proformas
+- **Smart PO generation** - Automatic PDF purchase order creation upon final approval
 - **Receipt validation** - AI-powered comparison of receipts against purchase orders to flag discrepancies
-- **Role-based access** - Tailored interfaces for Staff, Approvers, and Finance teams
+- **Role-based access** - Staff, Approver Level 1, Approver Level 2, and Finance roles
 
 ---
 
@@ -29,164 +29,155 @@ This system streamlines the procurement process from purchase request to payment
 
 ```bash
 # Clone the repository
-git clone https://github.com/Himbaza123h/procure-to-pay-system
+git clone https://github.com/Himbaza123h/procure-to-pay-system.git
 cd procure-to-pay-system
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env and add OPENAI_API_KEY
+# Build and run with Docker
+docker compose up --build
 
-# Build and run
-docker-compose up --build
-
-# In a new terminal, run migrations
-docker-compose exec backend python manage.py migrate
-
-# Create a superuser (optional)
-docker-compose exec backend python manage.py createsuperuser
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# Swagger Docs: http://localhost:8000/swagger/
 ```
 
-**Access the application:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Docs: http://localhost:8000/api/docs
+### Default Test Users
+
+| Role | Username | Password |
+|------|----------|----------|
+| Staff | staff | staff123 |
+| Approver L1 | approver1 | approver123 |
+| Approver L2 | approver2 | approver123 |
+| Finance | finance | finance123 |
 
 ---
 
-## 📱 Features by Role
+## 🤖 AI-Powered Features
 
-### Staff
-- Create purchase requests with proforma uploads
-- Track request status in real-time
-- Submit receipts after purchase completion
-- View approval history
+### 1. Proforma Processing
+When staff uploads a proforma/quotation:
+- **Extracts vendor name** from document
+- **Identifies line items** with quantities and prices
+- **Stores structured data** for PO generation
 
-### Approvers (Level 1 & 2)
-- Review pending requests
-- Approve or reject with comments
-- View complete approval chain
-- Access detailed request information
+### 2. Automatic PO Generation
+When request receives final approval (Level 2):
+- **Generates PDF** purchase order automatically
+- **Includes** vendor info, items, prices, approval signatures
+- **Assigns PO number** (format: PO-000001)
 
-### Finance Team
-- View all approved requests
-- Access purchase orders and receipts
-- Monitor procurement activities
-- Generate reports
-
----
-
-## 🛠️ Technology Stack
-
-**Backend:**
-- Django 4.2 + Django REST Framework
-- PostgreSQL 15
-- JWT Authentication
-- OpenAI API for document processing
-
-**Frontend:**
-- React 18 with Hooks
-- Tailwind CSS
-- Axios for API calls
-
-**DevOps:**
-- Docker & Docker Compose
-- AWS EC2 deployment
+### 3. Receipt Validation
+When staff submits receipt after purchase:
+- **Compares vendor** name with PO
+- **Validates amount** (within 5% tolerance)
+- **Checks items** match what was ordered
+- **Flags discrepancies** if mismatch detected
 
 ---
 
 ## 📚 API Endpoints
 
-```
-POST   /api/auth/login/                    - User login
-POST   /api/requests/                      - Create request
-GET    /api/requests/                      - List requests
-GET    /api/requests/{id}/                 - Request details
-PATCH  /api/requests/{id}/approve/         - Approve request
-PATCH  /api/requests/{id}/reject/          - Reject request
-PUT    /api/requests/{id}/                 - Update request
-POST   /api/requests/{id}/submit-receipt/  - Submit receipt
-```
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| POST | `/api/token/` | Login (get JWT) | All |
+| POST | `/api/requests/` | Create request | Staff |
+| GET | `/api/requests/` | List requests | All |
+| GET | `/api/requests/{id}/` | Request details | All |
+| PUT | `/api/requests/{id}/` | Update request | Staff (owner) |
+| PATCH | `/api/requests/{id}/approve/` | Approve | Approvers |
+| PATCH | `/api/requests/{id}/reject/` | Reject | Approvers |
+| POST | `/api/requests/{id}/submit-receipt/` | Submit receipt | Staff (owner) |
 
-Full API documentation available at `/api/docs/`
-
----
-
-## 🏗️ System Architecture
-
-### Approval Workflow
-```
-PENDING → Approver L1 → Approver L2 → APPROVED
-    ↓           ↓             ↓
-REJECTED    REJECTED      REJECTED
-```
-
-### Document Processing Pipeline
-1. **Proforma Upload** → AI extracts vendor, items, prices
-2. **Final Approval** → System generates Purchase Order automatically
-3. **Receipt Upload** → AI validates against PO, flags discrepancies
+Full interactive docs at `/swagger/`
 
 ---
 
-## 🧪 Testing
+## 🏗️ Approval Workflow
 
-```bash
-# Backend tests
-docker-compose exec backend python manage.py test
-
-# Frontend tests
-docker-compose exec frontend npm test
-
-# Test coverage
-docker-compose exec backend pytest --cov
+```
+┌─────────┐     ┌─────────────┐     ┌─────────────┐     ┌──────────┐
+│ PENDING │ ──► │ APPROVER L1 │ ──► │ APPROVER L2 │ ──► │ APPROVED │
+└─────────┘     └─────────────┘     └─────────────┘     └──────────┘
+                      │                    │                  │
+                      ▼                    ▼                  ▼
+                 ┌──────────┐        ┌──────────┐      ┌─────────┐
+                 │ REJECTED │        │ REJECTED │      │ PO Generated │
+                 └──────────┘        └──────────┘      └─────────┘
 ```
 
 ---
 
-## 🚢 Deployment
+## 🛠️ Technology Stack
 
-The application is deployed on AWS EC2 and accessible at:
-**[Live URL]**
-
-### Environment Variables Required
-```
-SECRET_KEY=django-secret
-DATABASE_URL=postgresql://user:pass@host:5432/db
-OPENAI_API_KEY=openai-key
-ALLOWED_HOSTS=domain.com
-```
-
----
-
-## 📖 Documentation
-
-- **Setup Guide:** See [SETUP.md](docs/SETUP.md)
-- **API Reference:** See [API.md](docs/API.md)
-- **Deployment Guide:** See [DEPLOYMENT.md](docs/DEPLOYMENT.md)
-- **Architecture:** See [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+| Layer | Technology |
+|-------|------------|
+| Backend | Django 4.2, Django REST Framework |
+| Database | PostgreSQL 15 |
+| Auth | JWT (SimpleJWT) |
+| Frontend | React 18, Tailwind CSS |
+| AI/OCR | Tesseract, pdfplumber, OpenAI (optional) |
+| PDF Gen | ReportLab |
+| DevOps | Docker, Docker Compose |
 
 ---
 
-## 🔐 Security Features
-
-- JWT-based authentication
-- Role-based access control (RBAC)
-- File upload validation and sanitization
-- SQL injection prevention
-- CSRF protection
-- Rate limiting on API endpoints
-
----
-
-## 📝 Project Structure
+## 📁 Project Structure
 
 ```
 procure-to-pay-system/
-├── backend/              # Django REST API
-├── frontend/             # React application
-├── docker-compose.yml    # Docker configuration
-├── docs/                 # Detailed documentation
-└── README.md            # This file
+├── backend/
+│   ├── api/                 # Main Django app
+│   │   ├── models.py        # User, PurchaseRequest, Approval
+│   │   ├── views.py         # API ViewSets
+│   │   ├── serializers.py   # DRF Serializers
+│   │   └── permissions.py   # Role-based permissions
+│   ├── services/            # AI Services
+│   │   ├── document_processor.py  # Proforma extraction
+│   │   ├── po_generator.py        # PO PDF generation
+│   │   └── receipt_validator.py   # Receipt validation
+│   ├── config/              # Django settings
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── pages/           # Page components
+│   │   └── services/        # API service
+│   ├── Dockerfile
+│   └── package.json
+├── docker-compose.yml
+└── README.md
 ```
+
+---
+
+## 🧪 Testing the AI Features
+
+### Test Proforma Processing
+1. Login as staff
+2. Create new request with PDF/image proforma
+3. Check if `vendor_name` and `extracted_items` appear in response
+
+### Test PO Generation
+1. Create request as staff
+2. Approve as approver_level_1
+3. Approve as approver_level_2
+4. Check if `purchase_order` field has PDF link
+
+### Test Receipt Validation
+1. After request is approved, login as staff
+2. Submit receipt via `/api/requests/{id}/submit-receipt/`
+3. Check `receipt_validated` and `validation_errors` in response
+
+---
+
+## 🔐 Security
+
+- JWT authentication with 5-hour access token
+- Role-based access control (RBAC)
+- File upload validation (10MB max, PDF/images only)
+- CORS configured for frontend origin
+- Environment variables for secrets
 
 ---
 
@@ -194,10 +185,10 @@ procure-to-pay-system/
 
 **Alain Honore**
 
-For IST Africa - Full Stack Python/Django Developer Position
+Technical Assessment for IST Africa - Full Stack Python/Django Developer
 
 ---
 
 ## 📄 License
 
-This project was created for technical assessment purposes.
+Created for technical assessment purposes.

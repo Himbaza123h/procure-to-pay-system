@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { requestsAPI } from '../services/api';
 import Header from '../components/common/Header';
 import { FormSkeleton } from '../components/common/Skeleton';
+import { toast } from 'react-toastify';
+
 
 const CreateRequest = () => {
   const [formData, setFormData] = useState({
@@ -31,9 +33,10 @@ const CreateRequest = () => {
     setLoading(true);
     try {
       await requestsAPI.create(formData);
+      toast.success('Request created successfully!');
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to create request');
+      toast.error(err.response?.data?.detail || 'Failed to create request');
       setLoading(false);
     }
   };

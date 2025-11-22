@@ -6,6 +6,7 @@ import Header from '../components/common/Header';
 import { RequestDetailSkeleton } from '../components/common/Skeleton';
 import StatusBadge from '../components/requests/StatusBadge';
 import Modal from '../components/requests/Modal';
+import { toast } from 'react-toastify';
 
 const RequestDetail = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const RequestDetail = () => {
     setLoading(true);
     try {
       const response = await requestsAPI.getById(id);
-      setRequest(response.data);
+      setRequest(response.data.data);
     } catch (error) {
       console.error('Error fetching request:', error);
     }
@@ -42,14 +43,14 @@ const RequestDetail = () => {
       setComments('');
       fetchRequest();
     } catch (error) {
-      alert('Error approving request: ' + (error.response?.data?.detail || 'Unknown error'));
+      toast.error('Error approving request: ' + (error.response?.data?.detail || 'Unknown error'));
     }
     setActionLoading(false);
   };
 
   const handleReject = async () => {
     if (!comments.trim()) {
-      alert('Comments are required when rejecting a request');
+      toast.warning('Comments are required when rejecting a request');
       return;
     }
     setActionLoading(true);
@@ -67,7 +68,7 @@ const RequestDetail = () => {
   const handleReceiptUpload = async (e) => {
     e.preventDefault();
     if (!receiptFile) {
-      alert('Please select a receipt file');
+      toast.warning('Please select a receipt file');
       return;
     }
     setActionLoading(true);
@@ -75,9 +76,9 @@ const RequestDetail = () => {
       await requestsAPI.submitReceipt(id, receiptFile);
       setReceiptFile(null);
       fetchRequest();
-      alert('Receipt uploaded successfully!');
+      toast.success('Receipt uploaded successfully!');
     } catch (error) {
-      alert('Error uploading receipt: ' + (error.response?.data?.detail || 'Unknown error'));
+      toast.error('Error uploading receipt: ' + (error.response?.data?.detail || 'Unknown error'));
     }
     setActionLoading(false);
   };

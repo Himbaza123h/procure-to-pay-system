@@ -19,7 +19,7 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await requestsAPI.getAll();
-      setRequests(response.data.results || []);
+      setRequests(response.data.results.data || []);
     } catch (error) {
       console.error('Error fetching requests:', error);
       setRequests([]);

@@ -22,7 +22,7 @@ const Requests = () => {
     try {
       const params = filter !== 'all' ? { status: filter } : {};
       const response = await requestsAPI.getAll(params);
-      setRequests(response.data.results || []);
+      setRequests(response.data.results.data || []);
     } catch (error) {
       console.error('Error fetching requests:', error);
       setRequests([]);
