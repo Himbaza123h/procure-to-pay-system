@@ -2,8 +2,8 @@
 
 A modern Purchase Request & Approval System with AI-powered document processing capabilities.
 
-**Live Demo:** [https://app.onrender.com](https://app.onrender.com)  
-**API Documentation:** [https://app.onrender.com/swagger/](https://app.onrender.com/swagger/)
+**Live Demo:** [https://procure-frontend.onrender.com](https://procure-frontend.onrender.com)  
+**API Documentation:** [https://procure-backend.onrender.com/swagger/](https://procure-backend.onrender.com/swagger/)
 
 ---
 
@@ -26,7 +26,6 @@ This system streamlines the procurement process from purchase request to payment
 - Git
 
 ### Running Locally
-
 ```bash
 # Clone the repository
 git clone https://github.com/Himbaza123h/procure-to-pay-system.git
@@ -88,12 +87,11 @@ When staff submits receipt after purchase:
 | PATCH | `/api/requests/{id}/reject/` | Reject | Approvers |
 | POST | `/api/requests/{id}/submit-receipt/` | Submit receipt | Staff (owner) |
 
-Full interactive docs at `/swagger/`
+Full interactive docs at [https://procure-backend.onrender.com/swagger/](https://procure-backend.onrender.com/swagger/)
 
 ---
 
 ## 🏗️ Approval Workflow
-
 ```
 ┌─────────┐     ┌─────────────┐     ┌─────────────┐     ┌──────────┐
 │ PENDING │ ──► │ APPROVER L1 │ ──► │ APPROVER L2 │ ──► │ APPROVED │
@@ -117,12 +115,11 @@ Full interactive docs at `/swagger/`
 | Frontend | React 18, Tailwind CSS |
 | AI/OCR | Tesseract, pdfplumber, OpenAI (optional) |
 | PDF Gen | ReportLab |
-| DevOps | Docker, Docker Compose |
+| DevOps | Docker, Docker Compose, Render |
 
 ---
 
 ## 📁 Project Structure
-
 ```
 procure-to-pay-system/
 ├── backend/
